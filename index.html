@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔖</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
     <meta name="description" content="Code snippets that Nafeu looks up often.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="data.js"></script>
@@ -13,18 +13,182 @@
       }
     </style>
   </head>
-  <body class="p-4 flex flex-col gap-4">
-    <h1 class="text-3xl font-bold">🔖 Things I Look Up Often</h1>
+  <body class="p-4 flex flex-col gap-4 bg-gray-950">
+    <h1 class="text-3xl font-bold text-slate-50">Things I Look Up Often</h1>
     <input
-      class="p-2 border-2 border-radius rounded-md"
-      autofocus
+      id="search"
+      class="p-2 border-2 border-radius rounded-md text-slate-50 bg-gray-950 border-slate-50"
       type="text"
       placeholder="Enter query"
     />
     <div
       id="snippets"
-      class="flex flex-col gap-4"
+      class="flex flex-col gap-4 text-slate-50"
     >
     </div>
+    <script type="text/javascript">
+      const d = document; const loaded = 'DOMContentLoaded'; const $ = selector => d.querySelector(selector);
+
+      const SEARCH_INPUT_DEBOUNCE_MS = 300;
+      const COPY_TO_CLIPBOARD_SUCCESS_MS = 500;
+
+      let lastSearch;
+
+      const debounce = (func, delay) => {
+        let timeoutId;
+
+        return function () {
+          const context = this;
+          const args    = arguments;
+
+          clearTimeout(timeoutId);
+
+          timeoutId = setTimeout(() => { func.apply(context, args); }, delay);
+        };
+      }
+
+      const copyTextToClipboard = (text, container) => {
+        const textarea = d.createElement('textarea');
+
+        textarea.value = text;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        d.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+          const successful = d.execCommand('copy');
+
+          if (successful) {
+            container.classList.add('border-green-500');
+
+            setTimeout(() => {
+              container.classList.remove('border-green-500');
+            }, COPY_TO_CLIPBOARD_SUCCESS_MS)
+          }
+        } catch (err) {
+          console.error('Oops, unable to copy', err);
+        }
+
+        d.body.removeChild(textarea);
+      }
+
+      const snippets = data
+      .split('---\n')
+      .filter(snippet => snippet !== '')
+      .map(snippet => {
+        const snippetSplitByNewline = snippet.split('\n');
+        const [description, tags] = snippetSplitByNewline[0].split('|');
+        const code = snippetSplitByNewline.slice(1, snippetSplitByNewline.length).join('\n');
+
+        return {
+          description: description.trim(),
+          tags: tags.trim().split(' ').filter(x => x.length > 0),
+          code
+        }
+      });
+
+      const buildSnippetElements = query => {
+        $('#snippets').innerHTML = '';
+
+        snippets
+          .filter(snippet => `${snippet.description} ${snippet.tags.join(' ')}`.includes(query))
+          .forEach(snippet => {
+            const container     = d.createElement('div');
+            container.className = [
+              'snippet',
+              'border-2 rounded-md',
+              'p-4',
+              'cursor-pointer'
+            ].join(' ');
+
+            const description       = d.createElement('div')
+            description.className   = [
+              'description',
+              'text-lg',
+              'mb-2'
+            ].join(' ');
+            description.textContent = snippet.description;
+
+            const tags       = d.createElement('div')
+            tags.className   = [
+              'tags',
+              'flex gap-2',
+              'mb-4'
+            ].join(' ');
+
+            snippet.tags.forEach(tagString => {
+              const tag       = d.createElement('span');
+              tag.className   = [
+                'tag',
+                'bg-slate-50 text-gray-950 text-xs font-bold',
+                'p-1',
+                'rounded-md'
+              ].join(' ');
+              tag.textContent = tagString
+
+              tags.appendChild(tag);
+            });
+
+            const code       = d.createElement('pre')
+            code.className   = [
+              'code',
+              'text-sm',
+              'rounded-md',
+              'p-2',
+              'bg-gray-800'
+            ].join(' ');
+            code.textContent = snippet.code;
+
+            container.appendChild(description);
+            container.appendChild(tags);
+            container.appendChild(code);
+
+            container.tabIndex = 0;
+
+            container.addEventListener('keydown', event => {
+              if (event.key === 'Enter' || event.keyCode === 13) {
+                event.preventDefault();
+                copyTextToClipboard(snippet.code, container);
+              }
+            });
+
+            container.addEventListener('click', () => {
+              copyTextToClipboard(snippet.code, container);
+            });
+
+            $('#snippets').appendChild(container);
+          });
+      }
+
+      const showEmptyResults = () => {
+        $('#snippets').innerHTML = '';
+
+        const emptyResults     = d.createElement('span');
+        emptyResults.className = [
+          'empty-results'
+        ].join(' ');
+        emptyResults.textContent = "No snippets found.";
+
+        $('#snippets').appendChild(emptyResults);
+      }
+
+      d.addEventListener(loaded, () => {
+        showEmptyResults();
+
+        d.addEventListener('input', debounce(() => {
+          const query = $('#search').value;
+
+          if (query.length > 0) {
+            buildSnippetElements(query);
+          } else {
+            showEmptyResults();
+          }
+        }, SEARCH_INPUT_DEBOUNCE_MS))
+
+        $('#search').focus();
+      });
+    </script>
   </body>
 </html>

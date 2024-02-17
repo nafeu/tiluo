@@ -1,15 +1,19 @@
 # Things I Look Up Often
 
-Single-phrase motto for each day of the week.
+Search tool for code snippets that I look up often.
 
-## Setup
+Check out the app [here](https://nafeu.com/tiluo).
+
+## Installation
 
 ```
-git clone https://github.com/nafeu/weekly-motto.git
-cd weekly-motto
+git clone https://github.com/nafeu/tiluo.git
+cd tiluo
 ```
 
-Edit `index.html` in your editor of choice.
+## Usage
+
+Edit `data.js` in your editor of choice. Serve the index.html file through a webserver then just load the page in a browser.
 
 ## Credits
 
