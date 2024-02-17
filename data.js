@@ -47,4 +47,10 @@ done
 
 # > chmod +x script.sh
 # > ./script.sh arg1 arg2 arg3
+---
+bash exit script if arg does not exist | bash exit arg not exist missing
+if [ -z "$1" ]; then
+  echo "Error: Argument \$1 is required."
+  exit 1
+fi
 `
