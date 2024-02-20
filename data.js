@@ -53,4 +53,14 @@ if [ -z "$1" ]; then
   echo "Error: Argument \$1 is required."
   exit 1
 fi
+---
+bash check if directory exists | bash directory exists check conditional
+if [ -d "[DIRECTORY_PATH]" ]; then
+  # If it exists, do this...
+else
+  # If it doesn't exist, do this...
+fi
+---
+bash copy and rename file | bash copy rename same
+cp original-file.txt copy-with-new-name.txt
 `
