@@ -1,3 +1,4 @@
+
 const data = `---
 basic express server | express server get http
 import express from 'express';
@@ -63,4 +64,7 @@ fi
 ---
 bash copy and rename file | bash copy rename same
 cp original-file.txt copy-with-new-name.txt
+---
+git create empty commit | git create empty commit
+git commit --allow-empty -m "Empty Commit"
 `
