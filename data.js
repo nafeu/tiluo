@@ -67,4 +67,10 @@ cp original-file.txt copy-with-new-name.txt
 ---
 git create empty commit | git create empty commit
 git commit --allow-empty -m "Empty Commit"
+---
+docker delete volume | docker delete remove volume rm
+docker volume rm [VOLUME_NAME]
+---
+docker list volumes | docker list volumes show ls
+docker volume ls
 `
