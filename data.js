@@ -73,4 +73,53 @@ docker volume rm [VOLUME_NAME]
 ---
 docker list volumes | docker list volumes show ls
 docker volume ls
+---
+setup eslint and prettier | eslint prettier node javascript
+npm install eslint --save-dev
+npm install prettier eslint-config-prettier eslint-plugin-prettier --save-dev
+npm install husky lint-staged --save-dev
+npx eslint --init
+touch .prettierrc
+# .prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "jsxBracketSameLine": false,
+  "tabWidth": 2,
+  "printWidth": 80
+}
+# .eslintrc
+{
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:prettier/recommended"
+  ],
+  "plugins": [
+    "react",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error"
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
+}
+# package.json
+"lint-staged": {
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "prettier --write",
+    "git add"
+  ]
+}
+"husky": {
+  "hooks": {
+    "pre-commit": "lint-staged"
+  }
+}
 `
